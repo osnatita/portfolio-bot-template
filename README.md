@@ -4,6 +4,10 @@ A small, customizable AI chatbot for your portfolio site. Visitors (recruiters, 
 
 Built with Next.js, the Vercel AI SDK, and Groq (free tier). Deploys to Vercel in a few minutes.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fosnatita%2Fportfolio-bot-template&env=GROQ_API_KEY&envDescription=Free%20Groq%20API%20key&envLink=https%3A%2F%2Fconsole.groq.com%2Fkeys)
+
+> One-click deploy sets up the app and asks for your `GROQ_API_KEY`. After it's live, edit the system prompt (see below) to make it yours.
+
 ---
 
 ## How it works
@@ -43,9 +47,11 @@ Model streams a short, on-brand answer back to the chat UI (app/page.tsx)
 
 ### 1. Clone and install
 
+Use the green **"Use this template"** button on GitHub to make your own copy, or clone directly:
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/portfolio-bot.git
-cd portfolio-bot
+git clone https://github.com/osnatita/portfolio-bot-template.git
+cd portfolio-bot-template
 npm install
 ```
 
@@ -68,6 +74,34 @@ That is the only required variable. The database and email pieces are optional (
 Open `app/api/chat/route.ts` and replace the `{{placeholders}}` in `SYSTEM_PROMPT` with your real bio, projects, and skills. Be specific: names, numbers, and outcomes make the answers good.
 
 Then open `app/page.tsx` and edit the three constants at the top (`BOT_NAME`, `PORTFOLIO_URL`, `SUGGESTED`).
+
+<details>
+<summary><strong>Example: what a filled-in prompt looks like</strong></summary>
+
+For a fictional designer, so you can see the shape:
+
+```
+You are a portfolio chatbot for Sam Rivera, a product designer.
+
+ABOUT Sam Rivera:
+Product designer with 8 years in fintech and health apps, based in Lisbon.
+Specializes in onboarding flows and design systems.
+
+WORK AND PROJECTS:
+- PayFlow onboarding: redesigned the signup flow for a payments app. Led
+  research and UI. Drop-off fell by about a third.
+- ClinicOS design system: built the component library for a clinic tool,
+  now used across 6 product teams.
+
+SKILLS:
+User research, interaction design, design systems, Figma, prototyping.
+
+CONTACT:
+If someone wants to reach Sam, ask for their email and their question, and
+tell them Sam will reply directly. Never reveal Sam's own email.
+```
+
+</details>
 
 ### 4. Run it
 
@@ -116,11 +150,24 @@ Both are off by default. Turn them on by setting the matching environment variab
 
 ### Conversation logs + leads (Postgres)
 
-1. Create a free Postgres database (e.g. [Neon](https://neon.tech)).
-2. Run `schema.sql` against it (the Neon dashboard has a SQL editor).
-3. Set `DATABASE_URL` in your environment.
+If you deploy on Vercel, the easiest path is Vercel's built-in Postgres (Neon). This is how the original was set up:
 
-Then every message is logged to `conversation_logs`, and any email a visitor types is saved to `email_leads`. Query them with the snippets at the bottom of `schema.sql`.
+1. In your Vercel project, open the **Storage** tab → **Create Database** → **Neon (Postgres)**.
+2. Vercel provisions the database and **automatically injects the connection variables into every environment** (`DATABASE_URL`, plus extras like `POSTGRES_URL`, `PGHOST`, etc.). You don't copy anything by hand. This template reads `DATABASE_URL`.
+3. Open the query editor (Vercel's Storage tab, or the Neon dashboard) and paste in [`schema.sql`](schema.sql) to create the two tables.
+
+Prefer to do it manually or deploy elsewhere? Create any Postgres database (Neon, Supabase, Railway, your own), run `schema.sql`, and set `DATABASE_URL` yourself.
+
+Either way you get two tables:
+- **`conversation_logs`** — one row per message: `session_id`, `role`, `content`, `created_at`.
+- **`email_leads`** — one row per captured email: `email`, `message`, `created_at`.
+
+**To read your logs**, run SQL in the Neon (or Vercel Storage) query editor:
+
+```sql
+SELECT * FROM conversation_logs ORDER BY created_at DESC;
+SELECT * FROM email_leads ORDER BY created_at DESC;
+```
 
 ### Lead notification emails (Resend)
 
