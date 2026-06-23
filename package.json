@@ -1,0 +1,33 @@
+{
+  "name": "portfolio-bot-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A customizable AI chatbot for your portfolio. Next.js + Vercel AI SDK + Groq.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ai-sdk/groq": "^3.0.39",
+    "@ai-sdk/react": "^3.0.195",
+    "ai": "^6.0.193",
+    "next": "16.2.6",
+    "pg": "^8.21.0",
+    "react": "^19",
+    "react-dom": "^19",
+    "resend": "^6.12.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.0",
+    "@types/node": "^22",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8.5",
+    "tailwindcss": "^4.2.0",
+    "tw-animate-css": "1.3.3",
+    "typescript": "5.7.3"
+  }
+}
